@@ -1,0 +1,43 @@
+:: BatchGotAdmin
+:-------------------------------------
+:: Window Setup
+@echo off
+mode con: cols=58 lines=16
+COLOR 02
+
+:: Display intro message
+echo.
+echo Welcome to the Priority launcher by MagicMushies
+echo.
+
+echo Launching 3.3.5a, please wait.
+REM  --> Check for permissions
+>nul 2>&1 "%SYSTEMROOT%\system32\cacls.exe" "%SYSTEMROOT%\system32\config\system"
+
+REM --> If error flag set, we do not have admin.
+if '%errorlevel%' NEQ '0' (
+    echo Requesting administrative privileges...
+    goto UACPrompt
+) else ( goto gotAdmin )
+
+:UACPrompt
+    echo Set UAC = CreateObject^("Shell.Application"^) > "%temp%\getadmin.vbs"
+    echo UAC.ShellExecute "%~s0", "", "", "runas", 1 >> "%temp%\getadmin.vbs"
+
+    "%temp%\getadmin.vbs"
+    exit /B
+
+:gotAdmin
+    if exist "%temp%\getadmin.vbs" ( del "%temp%\getadmin.vbs" )
+    pushd "%CD%"
+    CD /D "%~dp0"
+::--------------------------------------
+    CD "F:\WoTLK SSD\Wotlk 3.3.5a"
+    if exist "wow.exe" (
+        start "" /high wow.exe
+    ) else (
+        echo Error: Please place this file into your WoW WotLK directory, 
+		echo make sure your executable is called 'wow.exe' and try again.
+        pause
+        exit /B
+    )
